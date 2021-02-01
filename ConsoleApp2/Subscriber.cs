@@ -23,23 +23,14 @@
         {
             this.id = id;
 
-            pub.RaiseCustomEvent += this.HandleCustomEvent;
+            pub.RaiseCustomEvent += this.HandleCustomEventAsync;
         }
 
-        /// <summary>
-        /// This is async for summing method.
-        /// </summary>
-        /// <returns>Async result.</returns>
-        private static async Task<int> HandleCustomEventAsync(int value1, int value2)
+        private async void HandleCustomEventAsync(object sender, CustomEventArgs e)
         {
-            int result = await Task.Run(() => Summator.CalcSum(value1, value2));
-            return result;
-        }
-
-        private void HandleCustomEvent(object sender, CustomEventArgs e)
-        {
-            this.Result = HandleCustomEventAsync(e.First, e.Second).GetAwaiter().GetResult();
-            Console.WriteLine($"{this.id} subscriber received this message: {e.Message} = {this.Result}");
+            int result = await Task.Run(() => Summator.CalcSum(e.First, e.Second));
+            Console.WriteLine($"{this.id} subscriber received this message: {e.Message} = {result}");
+            this.Result = result;
         }
     }
 }
